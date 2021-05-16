@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
 
 func checkIfHasSixFactors(inputNumber int) bool {
 	lastValidTracking := 0
@@ -62,7 +67,17 @@ func markedTheSiblings(numberWithSixFactor int, maxRange int, statusTracker map[
 }
 
 func main() {
-	maxRangeToCheck := 262144 // H(262144) = 13208 (took 1m 39s)
+	if len(os.Args) < 2 {
+		log.Fatal("no input specified")
+	}
+
+	maxRangeToCheck, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(2)
+	}
+
+	// maxRangeToCheck := 262144 // H(262144) = 13208 (took 1m 39s)
 
 	totalNumbersWithSixFactors := getTotalNumbersWithSixFactors(maxRangeToCheck)
 
