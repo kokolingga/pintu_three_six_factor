@@ -2,80 +2,46 @@ package main
 
 import "fmt"
 
-func getFactors(inputNumber int) []int {
-	factors := make([]int, 0)
-
-	for i := 1; i <= inputNumber; i++ {
-		if inputNumber%i == 0 {
-			factors = append(factors, i)
-		}
-	}
-
-	return factors
-}
-
 func checkIfHasSixFactors(inputNumber int) bool {
 	lastValidTracking := 0
 
-	for i := 1; i <= inputNumber; i++ {
+	// expected lastValidTracking will be 4 (6-2)
+	// no need to check inputNumber % 1
+	// no need to check inputNumber % inputNumber
+	for i := 2; i < inputNumber; i++ {
 		if inputNumber%i == 0 {
 			lastValidTracking++
 
-			if lastValidTracking > 6 {
-				//fmt.Printf("%v is greater than 6\n", lastValidTracking)
+			if lastValidTracking > 4 {
 				return false
 			}
 		}
 	}
 
-	if lastValidTracking == 6 {
+	if lastValidTracking == 4 {
 		return true
 	} else {
-		//fmt.Printf("%v is less than 6\n", lastValidTracking)
 		return false
 	}
 }
 
-func getNumberOfFactors(inputNumber int) int {
-	return len(getFactors(inputNumber))
-}
-
-// func getNumbersWithSixFactors(maxRange int) []int {
-func getNumbersWithSixFactors(maxRange int) int {
+func getTotalNumbersWithSixFactors(maxRange int) int {
 
 	statusTracker := make(map[int]string, maxRange)
-	// var numbersWithSixFactors []int
-	var numbersWithSixFactorsAmount int
+	var totalNumbersWithSixFactors int
 
 	// number below 6 most likely have less than 6 factor.
 	// so we'll start from 6.
 	for i := 6; i <= maxRange; i++ {
 		if statusTracker[i] == "" {
-			// numbers "i" has not been checked
-			// fmt.Printf("\n%v is empty\n", i)
-
-			// check how many factors the number has
-
-			// (wrong approach. too long)
-			// numberOfFactors := getNumberOfFactors(i)
-			// fmt.Printf("number of factors : %v\n", numberOfFactors)
-
-			// if numberOfFactors == 6 {
 			if checkIfHasSixFactors(i) == true {
-				// fmt.Printf("=== %v is 6 factor ===\n", i)
-				// numbersWithSixFactors = append(numbersWithSixFactors, i)
 				markedTheSiblings(i, maxRange, statusTracker)
-				numbersWithSixFactorsAmount += 1
+				totalNumbersWithSixFactors += 1
 			}
-		} else {
-			// numbers "i" has been mark by "markedTheSiblings" function
-			// fmt.Printf("\n%v : % v\n", i, statusTracker[i])
-
 		}
 	}
 
-	// return numbersWithSixFactors
-	return numbersWithSixFactorsAmount
+	return totalNumbersWithSixFactors
 }
 
 func markedTheSiblings(numberWithSixFactor int, maxRange int, statusTracker map[int]string) {
@@ -87,6 +53,8 @@ func markedTheSiblings(numberWithSixFactor int, maxRange int, statusTracker map[
 		}
 
 		message := fmt.Sprintf("NOT-A-SIX-FACTOR (SIBLING OF %v)", numberWithSixFactor)
+		// numberWithSixFactor already has 6 factors.
+		// after the multiplication, the "bigger" siblings most likely have more than 6 factors.
 		statusTracker[numberWithSixFactor*counter] = message
 
 		counter++
@@ -94,35 +62,18 @@ func markedTheSiblings(numberWithSixFactor int, maxRange int, statusTracker map[
 }
 
 func main() {
-	/*
-		maxRangeToCheck := 128
+	maxRangeToCheck := 262144 // H(262144) = 13208 (took 1m 39s)
 
-		numbersWithSixFactors := getNumbersWithSixFactors(maxRangeToCheck)
+	totalNumbersWithSixFactors := getTotalNumbersWithSixFactors(maxRangeToCheck)
 
-		fmt.Printf("numbers with six factors : %v\n", numbersWithSixFactors)
-
-		fmt.Printf("H(%v) : %v \n", maxRangeToCheck, len(numbersWithSixFactors))
-	*/
+	fmt.Println(totalNumbersWithSixFactors)
 
 	/*
-		(first approach)
-		maxRangeToCheck := 262144 // 13208, took 2m 57s
+		// this will take up to (134217728/262144) * 1m 39s => 14+ hours.
 
-		numbersWithSixFactorsAmount := getNumbersWithSixFactors(maxRangeToCheck)
-		fmt.Println(numbersWithSixFactorsAmount)
-	*/
-
-	// (second approach)
-	maxRangeToCheck := 262144 //13208, took 1m 54s
-
-	numbersWithSixFactorsAmount := getNumbersWithSixFactors(maxRangeToCheck)
-	fmt.Println(numbersWithSixFactorsAmount)
-
-	/*
 		maxRangeToCheck := 134217728
 
-		numbersWithSixFactorsAmount := getNumbersWithSixFactors(maxRangeToCheck)
-		fmt.Println(numbersWithSixFactorsAmount)
+		totalNumbersWithSixFactors := getTotalNumbersWithSixFactors(maxRangeToCheck)
+		fmt.Println(totalNumbersWithSixFactors)
 	*/
-
 }
